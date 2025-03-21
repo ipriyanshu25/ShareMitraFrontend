@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Swal from "sweetalert2";
 
 const PaymentPage: React.FC = () => {
   // State for the selected payment method (bank or upi)
@@ -39,16 +40,65 @@ const PaymentPage: React.FC = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Prepare the payload based on the payment method
+    let payload;
     if (paymentMethod === "bank") {
-      console.log("Submitting Bank Details:", bankDetails);
-      // Submit bankDetails to your backend API
+      payload = {
+        paymentMethod: "bank",
+        accountHolder: bankDetails.accountHolder,
+        accountNumber: bankDetails.accountNumber,
+        ifsc: bankDetails.ifsc,
+        bankName: bankDetails.bankName,
+      };
     } else {
-      console.log("Submitting UPI Details:", upiDetails);
-      // Submit upiDetails to your backend API
+      payload = {
+        paymentMethod: "upi",
+        upiId: upiDetails.upiId,
+      };
     }
-    alert("Payment details submitted!");
+
+    try {
+      // POST the payment details to the Flask backend API
+      const response = await fetch(
+        "http://127.0.0.1:5000/payment/payment-details",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Swal.fire({
+          title: "Success",
+          text: data.msg,
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: data.msg,
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting payment details:", error);
+      Swal.fire({
+        title: "Error",
+        text: "An error occurred while submitting the payment details.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
   };
 
   return (
