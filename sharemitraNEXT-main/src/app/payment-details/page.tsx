@@ -40,8 +40,95 @@ const PaymentPage: React.FC = () => {
     });
   };
 
+  // Fetch bank name from IFSC code when user leaves the IFSC field
+  const handleIfscBlur = async () => {
+    const ifsc = bankDetails.ifsc.trim();
+    if (ifsc !== "") {
+      try {
+        const response = await fetch(`https://ifsc.razorpay.com/${ifsc}`);
+        if (response.ok) {
+          const data = await response.json();
+          // Update bank name with the fetched BANK field from API response
+          setBankDetails((prev) => ({ ...prev, bankName: data.BANK }));
+        } else {
+          setBankDetails((prev) => ({ ...prev, bankName: "" }));
+          Swal.fire({
+            title: "Error",
+            text: "Invalid IFSC Code",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        }
+      } catch (error) {
+        setBankDetails((prev) => ({ ...prev, bankName: "" }));
+        Swal.fire({
+          title: "Error",
+          text: "Error fetching bank details",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Validation for bank details
+    if (paymentMethod === "bank") {
+      const accountNumberRegex = /^[0-9]{9,18}$/; // Assumed valid range for account numbers
+      if (!accountNumberRegex.test(bankDetails.accountNumber)) {
+        Swal.fire({
+          title: "Error",
+          text: "Please enter a valid account number (9 to 18 digits).",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+        return;
+      }
+
+      if (!bankDetails.accountHolder.trim()) {
+        Swal.fire({
+          title: "Error",
+          text: "Account holder name is required.",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+        return;
+      }
+
+      if (!bankDetails.ifsc.trim()) {
+        Swal.fire({
+          title: "Error",
+          text: "IFSC code is required.",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+        return;
+      }
+
+      if (!bankDetails.bankName.trim()) {
+        Swal.fire({
+          title: "Error",
+          text: "Bank name could not be fetched. Please check the IFSC code.",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+        return;
+      }
+    } else {
+      // Validation for UPI details
+      const upiRegex = /^[\w.-]+@[\w.-]+$/;
+      if (!upiRegex.test(upiDetails.upiId.trim())) {
+        Swal.fire({
+          title: "Error",
+          text: "Please enter a valid UPI ID (e.g., username@bank).",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+        return;
+      }
+    }
 
     // Prepare the payload based on the payment method
     let payload;
@@ -185,6 +272,7 @@ const PaymentPage: React.FC = () => {
                   name="ifsc"
                   value={bankDetails.ifsc}
                   onChange={handleBankInputChange}
+                  onBlur={handleIfscBlur}
                   className="w-full border rounded px-3 py-2"
                   required
                 />
@@ -201,9 +289,8 @@ const PaymentPage: React.FC = () => {
                   id="bankName"
                   name="bankName"
                   value={bankDetails.bankName}
-                  onChange={handleBankInputChange}
-                  className="w-full border rounded px-3 py-2"
-                  required
+                  disabled
+                  className="w-full border rounded px-3 py-2 bg-gray-200"
                 />
               </div>
             </div>

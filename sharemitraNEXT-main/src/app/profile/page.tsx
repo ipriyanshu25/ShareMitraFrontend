@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 const Profile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState({
-    fullname: "",
+    fullName: "",
     email: "",
     phonenumber: "",
     password: "",
@@ -40,8 +40,8 @@ const Profile: React.FC = () => {
           <label className="block mb-1 text-gray-600 font-semibold">Full Name</label>
           <input
             type="text"
-            name="fullname"
-            value={profile.fullname}
+            name="fullName"
+            value={profile.fullName}
             onChange={handleChange}
             disabled={!isEditing}
             className={

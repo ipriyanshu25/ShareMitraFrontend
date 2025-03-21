@@ -133,13 +133,13 @@ const HomePage: React.FC = () => {
                       <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
                         <button
                           className="flex-1 bg-blue-500 text-white px-5 py-3 rounded-lg hover:bg-blue-600 transition"
-                          onClick={() => handleCopyMessage(task.message)}
+                          onClick={() => handleCopyMessage(task.message + " \n " +  task.link)}
                         >
                           📋 Copy Message
                         </button>
                         <button
                           className="flex-1 bg-green-500 text-white px-5 py-3 rounded-lg hover:bg-green-600 transition"
-                          onClick={() => handleSendWhatsApp(task.message)}
+                          onClick={() => handleSendWhatsApp(task.message + "\n" + task.link)}
                         >
                           📲 Send via WhatsApp
                         </button>
