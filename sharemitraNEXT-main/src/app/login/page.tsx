@@ -94,8 +94,8 @@ function Login() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const url = isLogin
-      ? "http://127.0.0.1:5000/login"
-      : "http://127.0.0.1:5000/register";
+      ? "http://127.0.0.1:5000//auth/login"
+      : "http://127.0.0.1:5000/auth/register";
     const data = isLogin ? loginData : signupData;
 
     if (!recaptchaToken) {
