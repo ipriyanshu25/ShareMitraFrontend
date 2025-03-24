@@ -20,12 +20,6 @@ const Profile: React.FC = () => {
     phonenumber: "",
   });
 
-  // State for password update
-  const [passwordUpdate, setPasswordUpdate] = useState({
-    old_password: "",
-    new_password: "",
-  });
-
   // On component mount, fetch profile details from backend using stored _id.
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -64,13 +58,6 @@ const Profile: React.FC = () => {
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle changes for password update fields
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setPasswordUpdate((prev) => ({ ...prev, [name]: value }));
-  };
-
-  // Save updated profile details by calling the backend API.
   // The payload includes the _id.
   const handleSave = () => {
     fetch("http://localhost:5000/user/update_details", {
@@ -102,48 +89,6 @@ const Profile: React.FC = () => {
           icon: "error",
           title: "Error",
           text: "Error updating profile.",
-        });
-      });
-  };
-
-  // Update password by calling the backend API.
-  // The payload includes _id, old_password, and new_password.
-  const handlePasswordUpdate = () => {
-    fetch("http://localhost:5000/user/update_password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        _id: profile._id,
-        old_password: passwordUpdate.old_password,
-        new_password: passwordUpdate.new_password,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === 200 || data.status === 1) {
-          Swal.fire({
-            icon: "success",
-            title: "Success",
-            text: "Password updated successfully.",
-          });
-          setPasswordUpdate({
-            old_password: "",
-            new_password: "",
-          });
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: data.msg,
-          });
-        }
-      })
-      .catch((err) => {
-        console.error("Error updating password:", err);
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Error updating password.",
         });
       });
   };
@@ -203,6 +148,8 @@ const Profile: React.FC = () => {
             name="phonenumber"
             value={profile.phonenumber}
             onChange={handleChange}
+            minLength={10}
+            maxLength={10}
             disabled={!isEditing}
             className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 ring-blue-400 transition-colors ${
               isEditing
@@ -237,43 +184,6 @@ const Profile: React.FC = () => {
               Edit Profile
             </button>
           )}
-        </div>
-
-        {/* Password Update Section */}
-        <div className="mt-8">
-          <h3 className="text-xl font-bold mb-4 text-gray-800">
-            Change Password
-          </h3>
-          <div className="mb-4">
-            <label className="block mb-1 text-gray-600 font-semibold">
-              Old Password
-            </label>
-            <input
-              type="password"
-              name="old_password"
-              value={passwordUpdate.old_password}
-              onChange={handlePasswordChange}
-              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 ring-blue-400 transition-colors border-gray-300 bg-white"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block mb-1 text-gray-600 font-semibold">
-              New Password
-            </label>
-            <input
-              type="password"
-              name="new_password"
-              value={passwordUpdate.new_password}
-              onChange={handlePasswordChange}
-              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 ring-blue-400 transition-colors border-gray-300 bg-white"
-            />
-          </div>
-          <button
-            onClick={handlePasswordUpdate}
-            className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors"
-          >
-            Update Password
-          </button>
         </div>
       </div>
     </div>

@@ -58,6 +58,13 @@ const HomePage: React.FC = () => {
     window.open(`https://wa.me/?text=${encodedMessage}`, "_blank");
   };
 
+  const handleBroadcastWhatsApp = (message: string) => {
+    // This function opens WhatsApp with the message pre-filled.
+    // The user can then choose a broadcast list manually within WhatsApp.
+    const encodedMessage = encodeURIComponent(message);
+    window.open(`https://wa.me/?text=${encodedMessage}`, "_blank");
+  };
+
   // Proceed to Next Step for a specific task
   const handleNextStepForTask = (taskId: string) => {
     window.location.href = `/home/taskupload?taskId=${taskId}`;
@@ -108,7 +115,7 @@ const HomePage: React.FC = () => {
                     onClick={() => toggleTask(task.id)}
                   >
                     <span className="flex items-center">
-                     Task - {task.title}
+                      Task - {task.title}
                       {showNewIcon && (
                         <span className="ml-2 px-2 py-1 text-xs font-bold text-white bg-red-500 rounded-full">
                           NEW
@@ -133,22 +140,34 @@ const HomePage: React.FC = () => {
                       <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
                         <button
                           className="flex-1 bg-blue-500 text-white px-5 py-3 rounded-lg hover:bg-blue-600 transition"
-                          onClick={() => handleCopyMessage(task.message + " \n " +  task.link)}
+                          onClick={() =>
+                            handleCopyMessage(task.message + " \n " + task.link)
+                          }
                         >
                           📋 Copy Message
                         </button>
                         <button
                           className="flex-1 bg-green-500 text-white px-5 py-3 rounded-lg hover:bg-green-600 transition"
-                          onClick={() => handleSendWhatsApp(task.message + "\n" + task.link)}
+                          onClick={() =>
+                            handleSendWhatsApp(task.message + "\n" + task.link)
+                          }
                         >
                           📲 Send via WhatsApp
+                        </button>
+                        <button
+                          className="flex-1 bg-purple-500 text-white px-5 py-3 rounded-lg hover:bg-purple-600 transition"
+                          onClick={() =>
+                            handleBroadcastWhatsApp(task.message + "\n" + task.link)
+                          }
+                        >
+                          📣 Broadcast via WhatsApp
                         </button>
                       </div>
                       <button
                         className="mt-4 w-full bg-gray-700 text-white px-5 py-3 rounded-lg hover:bg-gray-800 transition"
                         onClick={() => handleNextStepForTask(task.id)}
                       >
-                        ⏭️ Proceed to Next Step for Task {task.id}
+                        ⏭️ Proceed to Next Step for Task {task.title}
                       </button>
                     </div>
                   )}
