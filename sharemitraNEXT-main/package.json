@@ -9,11 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.0",
     "@popperjs/core": "^2.11.8",
     "@types/react-recaptcha-v3": "^1.1.5",
     "axios": "^1.8.3",
     "bootstrap": "^5.3.3",
     "framer-motion": "^12.5.0",
+    "lucide-react": "^0.483.0",
     "next": "15.2.3",
     "next-recaptcha-v3": "^1.5.2",
     "postcss": "^8.5.3",
