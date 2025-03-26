@@ -339,7 +339,7 @@ const HomePage: React.FC = () => {
       try {
         const response = await fetch("http://127.0.0.1:5000/task/tasks");
         const data = await response.json();
-        if (data.status === 1 && data.tasks) {
+        if (data.status === 200 && data.tasks) {
           const fetchedTasks: Task[] = data.tasks.sort(
             (a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
           );
