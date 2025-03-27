@@ -547,7 +547,7 @@ import { FaChevronDown, FaChevronUp, FaEdit } from "react-icons/fa";
 interface PaymentMethod {
   _id: string;
   userId: string;
-  paymentMethod: number; // 1 for bank, 0 for UPI
+  paymentMethod: number;
   accountHolder?: string;
   accountNumber?: string;
   ifsc?: string;
@@ -671,18 +671,18 @@ const PaymentPage: React.FC = () => {
     const payload =
       paymentMethod === "bank"
         ? {
-          userId,
-          paymentMethod: "bank",
-          accountHolder: bankDetails.accountHolder,
-          accountNumber: bankDetails.accountNumber,
-          ifsc: bankDetails.ifsc,
-          bankName: bankDetails.bankName,
-        }
+            userId,
+            paymentMethod: "bank",
+            accountHolder: bankDetails.accountHolder,
+            accountNumber: bankDetails.accountNumber,
+            ifsc: bankDetails.ifsc,
+            bankName: bankDetails.bankName,
+          }
         : {
-          userId,
-          paymentMethod: "upi",
-          upiId: upiDetails.upiId,
-        };
+            userId,
+            paymentMethod: "upi",
+            upiId: upiDetails.upiId,
+          };
 
     try {
       const response = await fetch(`http://127.0.0.1:5000/payment/payment-details`, {
@@ -708,28 +708,28 @@ const PaymentPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100 p-4 mt-20">
+    <div className="min-h-screen flex flex-col bg-green-50 p-4 mt-20">
       <div className="w-full max-w-4xl mx-auto mb-6">
-        <h2 className="text-2xl font-bold mb-4">My Payment Methods</h2>
+        <h2 className="text-2xl font-bold mb-4 text-green-900">My Payment Methods</h2>
         {paymentMethods.length === 0 ? (
-          <p className="text-gray-500">No payment methods added yet.</p>
+          <p className="text-green-700">No payment methods added yet.</p>
         ) : (
           <div className="grid gap-4">
             {paymentMethods.map((payment) => (
               <div
                 key={payment._id}
-                className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition duration-300 p-4"
+                className="bg-white border border-green-200 rounded-xl shadow-sm hover:shadow-md transition duration-300 p-4"
               >
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
-                    <h3 className="text-lg font-semibold text-gray-800">
+                    <h3 className="text-lg font-semibold text-green-900">
                       {payment.paymentMethod === 1 ? (
-                        <span className="bg-blue-100 text-blue-600 text-xs px-2 py-0.5 rounded">Bank</span>
+                        <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded">Bank</span>
                       ) : (
-                        <span className="bg-green-100 text-green-600 text-xs px-2 py-0.5 rounded">UPI</span>
+                        <span className="bg-green-200 text-green-800 text-xs px-2 py-0.5 rounded">UPI</span>
                       )}
                     </h3>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-green-700">
                       Added on: {new Date(payment.created_at).toLocaleString("en-IN", {
                         year: "numeric",
                         month: "short",
@@ -742,20 +742,20 @@ const PaymentPage: React.FC = () => {
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => setExpandedPayment(expandedPayment === payment._id ? null : payment._id)}
-                      className="text-gray-600 hover:text-black"
+                      className="text-green-600 hover:text-green-800"
                     >
                       {expandedPayment === payment._id ? <FaChevronUp /> : <FaChevronDown />}
                     </button>
                     <button
                       onClick={() => handleEditPayment(payment)}
-                      className="text-blue-600 hover:text-blue-800"
+                      className="text-green-600 hover:text-green-800"
                     >
                       <FaEdit />
                     </button>
                   </div>
                 </div>
                 {expandedPayment === payment._id && (
-                  <div className="mt-4 pt-3 text-sm text-gray-700 space-y-1 border-t">
+                  <div className="mt-4 pt-3 text-sm text-green-800 space-y-1 border-t border-green-200">
                     {payment.paymentMethod === 1 ? (
                       <>
                         <p><strong>Account Holder:</strong> {payment.accountHolder}</p>
@@ -774,123 +774,52 @@ const PaymentPage: React.FC = () => {
         )}
       </div>
 
-
-
-      {/*   update till this*/}
-
       {/* Payment Form */}
-      <div className="w-full max-w-md bg-white rounded shadow p-6 mx-auto">
-        <h2 className="text-2xl font-bold mb-4">
+      <div className="w-full max-w-md bg-white rounded shadow p-6 mx-auto border border-green-200">
+        <h2 className="text-2xl font-bold mb-4 text-green-900">
           {editingPayment ? "Edit Payment Details" : "Add Payment Details"}
         </h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-lg font-medium mb-2">
+            <label className="block text-lg font-medium mb-2 text-green-800">
               Select Payment Method:
             </label>
-            <div className="flex items-center mb-2">
-              <input
-                type="radio"
-                id="bank"
-                name="paymentMethod"
-                value="bank"
-                checked={paymentMethod === "bank"}
-                onChange={handlePaymentMethodChange}
-                className="mr-2"
-              />
+            <div className="flex items-center mb-2 text-green-700">
+              <input type="radio" id="bank" name="paymentMethod" value="bank" checked={paymentMethod === "bank"} onChange={handlePaymentMethodChange} className="mr-2" />
               <label htmlFor="bank">Bank Account</label>
             </div>
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="upi"
-                name="paymentMethod"
-                value="upi"
-                checked={paymentMethod === "upi"}
-                onChange={handlePaymentMethodChange}
-                className="mr-2"
-              />
+            <div className="flex items-center text-green-700">
+              <input type="radio" id="upi" name="paymentMethod" value="upi" checked={paymentMethod === "upi"} onChange={handlePaymentMethodChange} className="mr-2" />
               <label htmlFor="upi">UPI</label>
             </div>
           </div>
 
           {paymentMethod === "bank" ? (
-            <div>
+            <>
               <div className="mb-4">
-                <label htmlFor="accountHolder" className="block text-sm font-medium mb-1">
-                  Account Holder Name
-                </label>
-                <input
-                  type="text"
-                  id="accountHolder"
-                  name="accountHolder"
-                  value={bankDetails.accountHolder}
-                  onChange={handleBankInputChange}
-                  className="w-full border rounded px-3 py-2"
-                  required
-                />
+                <label htmlFor="accountHolder" className="block text-sm font-medium mb-1 text-green-700">Account Holder Name</label>
+                <input type="text" id="accountHolder" name="accountHolder" value={bankDetails.accountHolder} onChange={handleBankInputChange} className="w-full border border-green-300 rounded px-3 py-2" required />
               </div>
               <div className="mb-4">
-                <label htmlFor="accountNumber" className="block text-sm font-medium mb-1">
-                  Account Number
-                </label>
-                <input
-                  type="text"
-                  id="accountNumber"
-                  name="accountNumber"
-                  value={bankDetails.accountNumber}
-                  onChange={handleBankInputChange}
-                  className="w-full border rounded px-3 py-2"
-                  required
-                />
+                <label htmlFor="accountNumber" className="block text-sm font-medium mb-1 text-green-700">Account Number</label>
+                <input type="text" id="accountNumber" name="accountNumber" value={bankDetails.accountNumber} onChange={handleBankInputChange} className="w-full border border-green-300 rounded px-3 py-2" required />
               </div>
               <div className="mb-4">
-                <label htmlFor="ifsc" className="block text-sm font-medium mb-1">
-                  IFSC Code
-                </label>
-                <input
-                  type="text"
-                  id="ifsc"
-                  name="ifsc"
-                  value={bankDetails.ifsc}
-                  onChange={handleBankInputChange}
-                  onBlur={handleIfscBlur}
-                  className="w-full border rounded px-3 py-2"
-                  required
-                />
+                <label htmlFor="ifsc" className="block text-sm font-medium mb-1 text-green-700">IFSC Code</label>
+                <input type="text" id="ifsc" name="ifsc" value={bankDetails.ifsc} onChange={handleBankInputChange} onBlur={handleIfscBlur} className="w-full border border-green-300 rounded px-3 py-2" required />
               </div>
               <div className="mb-4">
-                <label htmlFor="bankName" className="block text-sm font-medium mb-1">
-                  Bank Name
-                </label>
-                <input
-                  type="text"
-                  id="bankName"
-                  name="bankName"
-                  value={bankDetails.bankName}
-                  disabled
-                  className="w-full border rounded px-3 py-2 bg-gray-200"
-                />
+                <label htmlFor="bankName" className="block text-sm font-medium mb-1 text-green-700">Bank Name</label>
+                <input type="text" id="bankName" name="bankName" value={bankDetails.bankName} disabled className="w-full border rounded px-3 py-2 bg-green-100 text-green-800" />
               </div>
-            </div>
+            </>
           ) : (
             <div className="mb-4">
-              <label htmlFor="upiId" className="block text-sm font-medium mb-1">
-                UPI ID
-              </label>
-              <input
-                type="text"
-                id="upiId"
-                name="upiId"
-                value={upiDetails.upiId}
-                onChange={handleUpiInputChange}
-                className="w-full border rounded px-3 py-2"
-                required
-              />
+              <label htmlFor="upiId" className="block text-sm font-medium mb-1 text-green-700">UPI ID</label>
+              <input type="text" id="upiId" name="upiId" value={upiDetails.upiId} onChange={handleUpiInputChange} className="w-full border border-green-300 rounded px-3 py-2" required />
             </div>
           )}
 
-          {/* reCAPTCHA */}
           <div className="flex justify-center mb-4">
             <div className="transform scale-90 md:scale-100 origin-center">
               <ReCAPTCHA
@@ -902,7 +831,7 @@ const PaymentPage: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
+            className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
             disabled={!recaptchaToken}
           >
             {editingPayment ? "Update Payment Details" : "Submit Payment Details"}

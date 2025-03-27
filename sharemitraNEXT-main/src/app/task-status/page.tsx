@@ -58,9 +58,9 @@ const TaskStatus = () => {
   const statusStyles = (status: string) => {
     switch (status) {
       case "Completed":
-        return "bg-green-100 text-green-700";
+        return "bg-green-100 text-green-800";
       case "Pending":
-        return "bg-yellow-100 text-yellow-700";
+        return "bg-yellow-100 text-yellow-800";
       case "Not Completed":
         return "bg-red-100 text-red-700";
       default:
@@ -69,35 +69,47 @@ const TaskStatus = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto mt-20 p-8 bg-white rounded-xl shadow-lg border border-gray-200">
-      <h2 className="text-4xl font-semibold text-center text-gray-800 mb-8">Task Status History</h2>
-      <div className="overflow-x-auto rounded-lg shadow-md">
-        <table className="w-full text-left text-sm">
-          <thead className="bg-gray-200 text-gray-700 uppercase tracking-wider">
-            <tr>
-              <th className="px-6 py-3 border-b">No.</th>
-              <th className="px-6 py-3 border-b">Task Name</th>
-              <th className="px-6 py-3 border-b">Status</th>
-              <th className="px-6 py-3 border-b">Timestamp</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tasks.map((task, index) => (
-              <motion.tr
-                key={task.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="border-b hover:bg-gray-50"
-              >
-                <td className="px-6 py-4 font-medium text-gray-800">{task.id}</td>
-                <td className="px-6 py-4 text-gray-700">{task.name}</td>
-                <td className={`px-6 py-4 font-semibold ${statusStyles(task.status)} rounded-full inline-block mt-2`}>{task.status}</td>
-                <td className="px-6 py-4 text-gray-500">{task.timestamp}</td>
-              </motion.tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="min-h-screen bg-green-50 text-gray-800 py-12 px-4">
+      <div className="max-w-5xl mx-auto p-8 bg-white rounded-xl shadow-xl border border-green-200">
+        <h2 className="text-4xl font-bold text-center text-green-900 mb-8">
+          Task Status History
+        </h2>
+        <div className="overflow-x-auto rounded-lg shadow-md">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-green-200 text-green-800 uppercase tracking-wider">
+              <tr>
+                <th className="px-6 py-3 border-b">No.</th>
+                <th className="px-6 py-3 border-b">Task Name</th>
+                <th className="px-6 py-3 border-b">Status</th>
+                <th className="px-6 py-3 border-b">Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tasks.map((task, index) => (
+                <motion.tr
+                  key={task.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="border-b hover:bg-green-100"
+                >
+                  <td className="px-6 py-4 font-medium text-gray-800">{task.id}</td>
+                  <td className="px-6 py-4 text-gray-700">{task.name}</td>
+                  <td>
+                    <span
+                      className={`px-4 py-1 rounded-full text-sm font-semibold ${statusStyles(
+                        task.status
+                      )}`}
+                    >
+                      {task.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-gray-500">{task.timestamp}</td>
+                </motion.tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

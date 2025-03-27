@@ -314,11 +314,9 @@
 
 
 
-
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 
 interface Task {
   id: string;
@@ -331,8 +329,18 @@ interface Task {
 
 const HomePage: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [expandedTask, setExpandedTask] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Typing animation for "ShareMitra"
+  const heading = "ShareMitra";
+  const [typedText, setTypedText] = useState("");
+  const [charIndex, setCharIndex] = useState(0);
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    setIsLoggedIn(!!user);
+  }, []);
 
   useEffect(() => {
     async function fetchTasks() {
@@ -340,10 +348,11 @@ const HomePage: React.FC = () => {
         const response = await fetch("http://127.0.0.1:5000/task/tasks");
         const data = await response.json();
         if (data.status === 200 && data.tasks) {
-          const fetchedTasks: Task[] = data.tasks.sort(
-            (a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          const sortedTasks: Task[] = data.tasks.sort(
+            (a: any, b: any) =>
+              new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
           );
-          setTasks(fetchedTasks);
+          setTasks([sortedTasks[0]]); // Only newest one
         } else {
           setTasks([]);
         }
@@ -353,8 +362,29 @@ const HomePage: React.FC = () => {
         setLoading(false);
       }
     }
-    fetchTasks();
-  }, []);
+
+    if (isLoggedIn) {
+      fetchTasks();
+    }
+  }, [isLoggedIn]);
+
+  // Typing animation logic
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (charIndex < heading.length) {
+      timeout = setTimeout(() => {
+        setTypedText((prev) => prev + heading[charIndex]);
+        setCharIndex((prev) => prev + 1);
+      }, 150);
+    } else {
+      timeout = setTimeout(() => {
+        setTypedText("");
+        setCharIndex(0);
+      }, 2000); // Restart after delay
+    }
+
+    return () => clearTimeout(timeout);
+  }, [charIndex]);
 
   const handleCopyMessage = (message: string) => {
     navigator.clipboard.writeText(message);
@@ -369,110 +399,91 @@ const HomePage: React.FC = () => {
     window.location.href = `/home/taskupload?taskId=${taskId}`;
   };
 
-  const toggleTask = (taskId: string) => {
-    setExpandedTask(expandedTask === taskId ? null : taskId);
-  };
-
   return (
-    <div className="min-h-screen flex flex-col bg-green-50 text-gray-800">
-      <div className="text-center py-35 px-6 bg-green-200">
-        <motion.h1
-          className="text-5xl font-bold text-green-900 mb-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-        >
-          Welcome to ShareMitra
-        </motion.h1>
-        <motion.p
-          className="text-lg text-green-800"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.5 }}
-        >
+    <div className="min-h-screen flex flex-col bg-green-50 text-gray-800 font-[Poppins]">
+      {/* Hero Section */}
+      <div className="text-center py-24 px-6 bg-gradient-to-br from-green-200 to-green-100">
+        <h1 className="text-6xl md:text-7xl font-extrabold text-green-900 font-serif tracking-wide">
+          {typedText}
+          <span className="animate-pulse text-green-800">|</span>
+        </h1>
+        <p className="text-2xl mt-6 text-green-800 font-semibold">
           Earn money effortlessly by completing simple online tasks. 🚀
-        </motion.p>
-      </div>
-
-      {/* About Section */}
-      <div className="max-w-4xl mx-auto my-12 px-6">
-        <h2 className="text-3xl font-semibold mb-4">About ShareMitra</h2>
-        <p className="text-gray-700">
-          ShareMitra is an innovative platform where users can easily earn rewards by sharing provided content on social platforms. Engage, share, and grow your income!
         </p>
       </div>
 
+      {/* About Section with autoplay video */}
+      <div id="about" className="w-full bg-white py-16 px-6">
+        <h2 className="text-4xl font-bold mb-8 text-left text-green-800">About</h2>
+        <div className="w-full h-[450px] overflow-hidden rounded-xl shadow-lg">
+          <iframe
+            className="w-full h-full"
+            src="https://www.youtube.com/embed/MpsobHw-2kg?autoplay=1&mute=1&controls=1&rel=0"
+            title="Vedic Video"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+        </div>
+      </div>
+
       {/* Tasks Section */}
-      <div className="flex-grow max-w-4xl mx-auto px-6 mb-12">
-        <h2 className="text-3xl font-semibold mb-4 text-center">Available Tasks</h2>
+      <div id="tasks" className="max-w-6xl mx-auto px-6 mb-20 w-full">
+        <h2 className="text-4xl font-bold mb-8 text-left text-green-900">Available Tasks</h2>
         {loading ? (
-          <p>Loading tasks...</p>
+          <p>Loading latest task...</p>
+        ) : !isLoggedIn ? (
+          <div className="bg-white p-6 rounded-xl shadow-md flex items-center justify-center">
+            <p className="text-xl text-gray-600 flex items-center gap-2">
+              🔒 Please <strong>login</strong> to view tasks.
+            </p>
+          </div>
         ) : tasks.length === 0 ? (
           <p>No tasks available right now. Please check again later.</p>
         ) : (
-          tasks.map((task) => (
-            <div
-              key={task.id}
-              className="mb-6 bg-white rounded-lg shadow border border-gray-300 p-6 min-h-[100px] min-w-[600px] transition transform hover:scale-105 hover:shadow-lg"
-            >
-              <button
-                className="w-full flex justify-between items-center hover:cursor-pointer"
-                onClick={() => toggleTask(task.id)}
+          <div className="flex flex-col md:flex-row gap-6 bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+            <div className="flex-1">
+              <h3 className="text-2xl font-semibold text-green-800">{tasks[0].title}</h3>
+              <p className="mt-4 text-gray-700 whitespace-pre-wrap">{tasks[0].message}</p>
+              <a
+                href={tasks[0].link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 underline block mt-2"
               >
-                <span className="text-xl font-semibold flex items-center">
-                  {task.title}
-                  {task.isNew === 1 && (
-                    <span className="ml-2 px-2 py-1 text-xs font-bold text-white bg-red-500 rounded-full">
-                      NEW
-                    </span>
-                  )}
-                </span>
-                <span>{expandedTask === task.id ? "▲" : "▼"}</span>
-              </button>
+                {tasks[0].link}
+              </a>
 
-              {expandedTask === task.id && (
-                <div className="mt-4">
-                  <p>{task.message}</p>
-                  <a
-                    href={task.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 underline block mt-2"
-                  >
-                    {task.link}
-                  </a>
-                  {expandedTask === task.id && (
-                    <div>
-                      <div className="flex gap-4 mt-4">
-                        <button
-                          className="bg-blue-500 text-white px-4 py-2 rounded"
-                          onClick={() => handleCopyMessage(task.message + "\n" + task.link)}
-                        >
-                          Copy Message
-                        </button>
-                        <button
-                          className="bg-green-500 text-white px-4 py-2 rounded"
-                          onClick={() => handleSendWhatsApp(task.message + "\n" + task.link)}
-                        >
-                          Share on WhatsApp
-                        </button>
-                      </div>
-                      <button
-                        className="mt-4 bg-gray-600 text-white px-4 py-2 rounded"
-                        onClick={() => handleNextStepForTask(task.id)}
-                      >
-                        Proceed to Task
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}</div>
-          ))
+              <div className="flex gap-4 mt-6 flex-wrap">
+                <button
+                  className="bg-blue-500 text-white px-4 py-2 rounded"
+                  onClick={() =>
+                    handleCopyMessage(tasks[0].message + "\n" + tasks[0].link)
+                  }
+                >
+                  Copy Message
+                </button>
+                <button
+                  className="bg-green-500 text-white px-4 py-2 rounded"
+                  onClick={() =>
+                    handleSendWhatsApp(tasks[0].message + "\n" + tasks[0].link)
+                  }
+                >
+                  Share on WhatsApp
+                </button>
+                <button
+                  className="bg-gray-700 text-white px-4 py-2 rounded"
+                  onClick={() => handleNextStepForTask(tasks[0].id)}
+                >
+                  Proceed to Task
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
       <footer className="text-center py-6 bg-green-200">
-        <p className="text-green-800">© 2024 ShareMitra. All rights reserved.</p>
+        <p className="text-green-800">© 2025 ShareMitra. All rights reserved.</p>
       </footer>
     </div>
   );

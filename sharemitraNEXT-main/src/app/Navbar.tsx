@@ -24,9 +24,15 @@ const Navbar: React.FC = () => {
     }
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUser({ name: parsedUser.fullName, profileImage: "/placeholder.jpg" });
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser({ name: parsedUser.fullName, profileImage: "/placeholder.jpg" });
+      } catch (err) {
+        console.error("Failed to parse user from localStorage:", err);
+        localStorage.removeItem("user"); // optionally clean up
+      }
     }
+
   }, [pathname]);
 
   // Conditionally return null AFTER all hooks have been called
